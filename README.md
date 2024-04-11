@@ -1,11 +1,16 @@
 # TODOs
-- check front-end \[FE\] (Next.js + backend Python AWS Lambda functions interoperability to better understand how Next.js FE can repeatedly talk to the pipeline designed)
+- ~~check front-end \[FE\] (Next.js + backend \[BE\] Python AWS Lambda functions interoperability to better understand how Next.js FE can repeatedly talk to the pipeline designed)~~
+  - => interoperability is OK
+    - FE UI can be repeatedly update by a set of changes of the page (React) states
+    - auth can be put to Next.js BE server actions except for uploading via presigned URLs maybe
 - check Facebook faiss + Python binding performance to assess similarity algorithm requirements (128 float numbers doesn't seem to be a lot yet it is better to check)
 - decide what and how to test
   - AWS Lambda functions and their possible web controller replacements can and should be tested by mocks and integration tests
   - the whole pipeline should be tested for responsiveness/performance
+  - Next.js (other JS) FE can be checked for absence of any corporate/cloud credentials
 - think of observability (CloudWatch + Managed Elastic and Graphana, externald DataDog, Newrelic etc.?)
-  
+- think of deployment (possibly Continous Deployment)
+
 
 # Questions about quality attributes
 

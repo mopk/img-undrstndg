@@ -2,16 +2,25 @@
 
 ## Frontend architecture
 
-Assuming responsiveness of the application is important frontend is a React.js application that updates its UI gradually with results after an upload is made.
+Assuming responsiveness of the application is important the application
+frontend is React.js that updates its UI gradually with results got in chunks over time after an upload is made.
 UI updates are done via states.
-The React.js application is deployed to S3 and delivered to users via AWS CloudFrond (CDN).
+The React.js application is deployed to S3 and delivered to users via AWS
+CloudFrond (CDN).
 
 ### Communication with backend
 
-Assuming image size can be more than 10 MB and images should be processed pristine React.js frontend uploads image to S3 storage via AWS API Gateway and Lambda function generating a presigned URL.
-All presigned URLs expire in seconds and are used by React.js frontend for direct uploads of input to and downloads of results from S3.
-React.js is notified when intermediate and final results of image understanding are available using WebSocket (Socket.io) and API Gateway WebSocket API and its backing AWS Lambda functions.
-When results are available React.js frontend downloads them using API Gateway, Lambda functions and presigned URLs and updates its state.
+Assuming image size can be more than 10 MB and images should be processed
+pristine React.js frontend uploads an image to S3 storage via AWS API Gateway
+and Lambda function generating a presigned URL working only for HTTP PUT method
+and the frontend origin.
+All presigned URLs expire in seconds and are used by React.js frontend for
+direct uploads of input to and downloads of results from S3.
+React.js frontend mantains a WebSocket (Socket.io) connection to and is
+notified when intermediate and final results of image understanding are
+available by API Gateway WebSocket API and its backing AWS Lambda functions.
+When results are available React.js frontend downloads them using API Gateway,
+Lambda functions and presigned URLs and updates its own state and UI.
 
 ## Backend architecture
 

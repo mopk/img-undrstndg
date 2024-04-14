@@ -24,21 +24,35 @@ Lambda functions and presigned URLs and updates its own state and UI.
 
 ## Backend architecture
 
-Assuming Algorithms A and B take not milliseconds but seconds to complete processing their respective steps of image understanding compute resources are ECS containers and backing EC2 instances. In case of special requirements compute resources can be pure EC2.
+Assuming Algorithms A and B take not milliseconds but seconds to complete
+processing their respective steps of image understanding compute resources are
+ECS containers and backing EC2 instances. In case of special requirements
+compute resources can be pure EC2.
 All algorithms take input from and put results to S3 storage.
-Assuming image database is 10+ million images Approximate Nearest Neighbor is a faiss based algorithm and uses ECS compute resources.
-Each ECS container of the algorithm builds its index reading data from an AWS RDS PostgreSQL instance.
+Assuming image database is 10+ million images Approximate Nearest Neighbor is a
+faiss based algorithm and uses ECS compute resources.
+Each ECS container of the algorithm builds its index reading data from an AWS
+RDS PostgreSQL instance.
 
-The flow of image understanding starts from an image upload to an S3 bucket and proceeds by S3 triggers and AWS Lambda functions invoking algorithms and notifying React.js backend via AWS API Gateway WebSocket API of completion of stages.
+The flow of image understanding starts from an image upload to an S3 bucket and
+proceeds by S3 triggers and AWS Lambda functions invoking algorithms and
+notifying React.js backend via AWS API Gateway WebSocket API of completion of
+stages.
 All inputs and results are stored using S3.
-The above is how AI algorithm parts are integrated into the image understanding application.
+The above is how AI algorithm parts are integrated into the image understanding
+application.
 
-Proposed language for all Lambda functions is Python yet TypeScript can be used as an alternative to make both frontend and backend be written in one language.
+Proposed language for all Lambda functions is Python yet TypeScript can be used
+as an alternative to make both frontend and backend written in one language.
 
-Simple caching of results for inputs using hashing is implemented to avoid processing of the same input multiple times. Hashing and verifying existence of previous results is responsibility of Lambda functions of API Gateway.
-Image understanding results retention is set and expires at can be renewed on new fetches per corporate policies.
+Simple caching of results for inputs using hashing is implemented to avoid
+processing of the same input multiple times. Hashing and verifying existence of
+previous results is responsibility of Lambda functions of API Gateway.
+Image understanding results retention is set and expires at can be renewed on
+new fetches per corporate policies.
 
-128 floating point numbers vector part of image database compiled by the client is hosted in an Amazon RDS PostgreSQL database.
+128 floating point numbers vector part of image database compiled by the client
+is hosted in an Amazon RDS PostgreSQL database.
 The very images are stored using S3.
 Mapping of vectors to images is a table of the database.
 

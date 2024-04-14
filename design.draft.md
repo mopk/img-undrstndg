@@ -100,15 +100,15 @@ Backend integration tests are meant to test the Terraform configuration and
 Lambda functions code result in backend parts behaving as expected.
 
 Security test examples are tests making sure that:
-- presigned URLs do not provide wrong HTTP methods or path access and expire as
-expected
+- presigned URLs and CORS policies do not provide wrong HTTP methods or path
+access and the URLs expire as expected
 - frontend facing Lambda functions cannot be misused to provide access or
 functionality beyond expected (e.g. by consuming failure causing inputs)
 - non frontend facing endpoints are not availabe from outside VPC
-- API Gateway APIs does drop duly on wrong/forbidden incoming requests
+- API Gateway APIs do drop duly on wrong/forbidden incoming requests
 
 Performance and volume test examples are tests of image similarity faiss based algorithm and the behaviour of the flow under high upload rates and large database volume.
-Especially mportant tests are tests having both expected peak request rates and
+Especially important tests are tests having both expected peak request rates and
 maximum projected DB volumes.
 
 In order to identify most important required tests a diagram or set of diagrams

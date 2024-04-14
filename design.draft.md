@@ -61,26 +61,68 @@ Mapping of vectors to images is a table of the database.
 Cloud deployment is done by Terraform.
 All the AWS objects are managed by Terraform configuration.
 React.js frontend is packed as a CloudFront distribution.
-Algorithms are packed as Docker images.
+Algorithms are packed as Docker images unless the developers set other
+requirements for algorithms A and B.
 
-Image database, both vectors and images, is initially populated and later extended by automation resembling a modified version of the main use case flow with disabled UI and similarity search and enabled appending of vectors and images to both PostgreSQL and S3 database parts. The automation is adpated to be used by scripts.
-If a requirement is set the main use case can also be modified to further extend the database. In such a case database image files do not expire when stored in an S3 bucket.
+Image database, both vectors and images, is initially populated and later
+extended by automation resembling a modified version of the main use case flow
+with disabled UI, algorithm A and similarity search and enabled insertion of
+vectors and images to both PostgreSQL and S3 database parts.
+The automation is adapated to be used by scripts.
+If a requirement is set the main use case can also be modified to further extend the database. In such a case database image crop files are saved and do not expire when stored in an S3 bucket.
 
 Each lambda layer needed by Lambda functions is packed by another automation piece resembling a series of package installations to an environment and packing the result of installations according to Lambda layer packing guidelines published by Amazon AWS. Packed lambda layers are managed by Terraform configuration.
 
-Unit/mock testing of code of Lambda functions is triggered before deployment. Depending on source code hosting GitHub, GitLab actions or separate AWS compute resource is used to run such tests.
-
 ## Testing
 
-Apart from unit/mock tests of code of Lambda functions the image understanding application is tested with integration, performance, volume and security tests.
+All tests below are run before full deployment to production.
 
-Frontend integration tests are a Selenium test suite making sure that React.js frontend successfully update its state gradually while interacting with a simple mock backend via both HTTP(S) and WebSocket and getting mock results.
-Backend integration tests deploy subsets of cloud infrastructure and test their interaction with their counterparts or mock where applicable.
-Examples are tests making sure Terraform configured S3 triggers trigger on certain S3 event like an image file upload or a Lambda function is properly notifies a mock frontend via API Gateway WebSocket API.
-Backend integration tests are meant to test the Terraform configuration results in backend parts behaving as expected.
+Unit/mock testing of code of Lambda functions test input validation and post
+conditions.
+Such tests run on each check-in to monitored source control branches failing
+the build if not passed.
+Depending on source code hosting GitHub, GitLab actions or separate AWS compute
+resource is used to run such tests.
 
-Security test examples are test that presigned URLs do not provide wrong HTTP methods or path access and expire as expected or frontend facing Lambda functions cannot be misused to provide access beyond expected.
+Apart from unit/mock tests of code of Lambda functions the image understanding
+application is tested with integration, performance, volume and security tests.
+
+Frontend integration tests are a Selenium test suite making sure that React.js frontend successfully updates its state gradually while interacting with a simple mock backend via both HTTP(S) and WebSocket and getting mock results.
+Backend integration tests deploy subsets of cloud infrastructure and test their
+interaction with their counterparts or mock where applicable.
+Examples are tests making sure:
+- Terraform configured S3 triggers trigger on certain S3 event like an image file upload
+- a Lambda layer / set of layers provides necessary dependencies to make certain
+lambda work
+- a Lambda function is properly notifies a mock frontend via API Gateway
+WebSocket API.
+Backend integration tests are meant to test the Terraform configuration and
+Lambda functions code result in backend parts behaving as expected.
+
+Security test examples are tests making sure that:
+- presigned URLs do not provide wrong HTTP methods or path access and expire as
+expected
+- frontend facing Lambda functions cannot be misused to provide access or
+functionality beyond expected (e.g. by consuming failure causing inputs)
+- non frontend facing endpoints are not availabe from outside VPC
+- API Gateway APIs does drop duly on wrong/forbidden incoming requests
 
 Performance and volume test examples are tests of image similarity faiss based algorithm and the behaviour of the flow under high upload rates and large database volume.
+Especially mportant tests are tests having both expected peak request rates and
+maximum projected DB volumes.
 
-In order to list all required tests a diagram or set of diagrams of interactions of parts of the app is to be analyzed.
+In order to identify most important required tests a diagram or set of diagrams
+of the application parts and their interactions is to be analyzed.
+
+All code is checked with appropriate static code analysis tools and linters.
+Such tools run on each check-in to monitored branches failing CI/CD builds in
+case of severe issues defined by their rules.
+Examples:
+- Checkov for Terraform and Dockerfile code
+- ESCheck for React.js frontend
+- Python linters
+
+Other test that run on each check-in to monitored branches are chosen depending
+on their cost and time needed. Some others run regularly (e.g. overnight).
+Most costly tests run manually and/or when code is critically responsible for
+passing them is modified.
